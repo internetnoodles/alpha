@@ -1,0 +1,24 @@
+body {
+  background: linear-gradient(#1a2933 60%, #1d225d 100%);
+  margin: 0;         
+  padding: 0;        
+  height: 100vh;
+}
+
+.grid-container {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-wrapper {
+  display: flex;           
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
+  height: 100vh;           /* Full viewport height */
+  padding: 10px;           /* Add spacing around the grid */
+}
+
+button {
+  min-width: 60px;
+  min-height: 60px;
+}
