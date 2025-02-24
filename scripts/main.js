@@ -42,6 +42,22 @@ function createLetterGrid(gridSize) {
 
   document.body.appendChild(gridContainer);
 
+  // Reset function to shuffle and clear the board
+  function resetGame() {
+    expectedLetter = 'A'; // Reset to 'A'
+    letters = [...alphabet]; // Reset to all 26 letters
+    for (let i = 26; i < totalCells; i++) {
+        letters.push(generateRandomLetter()); // Add random extras
+    }
+    shuffle(letters); // Shuffle the array
+    const buttons = gridContainer.querySelectorAll('.grid-item');
+    buttons.forEach((button, idx) => {
+        button.textContent = letters[idx]; // Update text
+        button.style.backgroundColor = ''; // Clear color
+        button.style.color = ''; // Clear color
+    });
+  }
+
   const gridWrapper = document.createElement("div");
     gridWrapper.classList.add("grid-wrapper");
     // Append the gridContainer to the wrapper
@@ -64,29 +80,14 @@ function createLetterGrid(gridSize) {
               event.target.style.backgroundColor = 'green';
               event.target.style.color = 'white';
               if (expectedLetter === 'Z') {
-                  console.log('You Win!');
-                  expectedLetter = 'A'; // Reset to start over
+                  const winPopup = confirm('You Win! Play again?');
+                  if (winPopup) resetGame();
               } else {
                   expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
               }
           } else {
               alert('You lost! Start over from A.');
-              expectedLetter = 'A'; // Reset to 'A' on wrong click
-
-              // Reshuffle the board
-              letters = [...alphabet];
-              for (let i = 26; i < totalCells; i++) {
-                letters.push(generateRandomLetter()); // add random extras
-              }
-              shuffle(letters);
-
-              // Reset all buttons to original color
-              const buttons = gridContainer.querySelectorAll('.grid-item');
-              buttons.forEach((button, idx) => {
-                button.textContent = letters[idx];
-                button.style.backgroundColor = ''; // Reset color to default
-                button.style.color = '';
-              });
+              resetGame();
           }
       }
   });
