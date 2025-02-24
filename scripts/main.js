@@ -20,7 +20,7 @@ function createLetterGrid(gridSize) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
   let letters = [...alphabet]; // start with all 26 letters
   for (let i = 26; i < totalCells; i++) {
-      letters.push(generateRandomLetter());
+      letters.push(generateRandomLetter()); // Add random extras
   }
   shuffle(letters); // randomize positions
 
@@ -40,23 +40,7 @@ function createLetterGrid(gridSize) {
       }
   }
 
-  document.body.appendChild(gridContainer);
-
-  // Reset function to shuffle and clear the board
-  function resetGame() {
-    expectedLetter = 'A'; // Reset to 'A'
-    letters = [...alphabet]; // Reset to all 26 letters
-    for (let i = 26; i < totalCells; i++) {
-        letters.push(generateRandomLetter()); // Add random extras
-    }
-    shuffle(letters); // Shuffle the array
-    const buttons = gridContainer.querySelectorAll('.grid-item');
-    buttons.forEach((button, idx) => {
-        button.textContent = letters[idx]; // Update text
-        button.style.backgroundColor = ''; // Clear color
-        button.style.color = ''; // Clear color
-    });
-  }
+  //document.body.appendChild(gridContainer);     **************************
 
   const gridWrapper = document.createElement("div");
     gridWrapper.classList.add("grid-wrapper");
@@ -65,11 +49,26 @@ function createLetterGrid(gridSize) {
     // Append the wrapper to the body
     document.body.appendChild(gridWrapper);
 
+  function resetGame() {
+    expectedLetter = 'A'; // Reset to 'A'
+    letters = [...alphabet]; // Reset to all 26 letters
+    for (let i = 26; i < totalCells; i++) {
+        letters.push(generateRandomLetter()); // Add random extras
+    }
+    shuffle(letters); 
+    const buttons = gridContainer.querySelectorAll('.grid-item');
+    buttons.forEach((button, idx) => {
+        button.textContent = letters[idx]; // Update text
+        button.style.backgroundColor = ''; // Clear color
+        button.style.color = ''; // Clear color
+    });
+  }
+
+  // Gameplay
   let expectedLetter = 'A'; // Start with 'A'
   gridContainer.addEventListener('click', (event) => {
       if (event.target.tagName === 'BUTTON') {
           const userChoice = event.target.textContent;
-
           if (userChoice == expectedLetter) {
               /*gridContainer.querySelectorAll('.grid-item').forEach(button => {
                 if (button.textContent === userChoice) {
@@ -81,14 +80,21 @@ function createLetterGrid(gridSize) {
               event.target.style.color = 'white';
               if (expectedLetter === 'Z') {
                   const winPopup = confirm('You Win! Play again?');
-                  if (winPopup) resetGame();
-              } else {
-                  expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
-              }
-          } else {
-              alert('You lost! Start over from A.');
-              resetGame();
-          }
+                  if (winPopup) {
+                    resetGame();
+                    } else {
+                    window.location.href = 'index.html';
+                    }
+                  } else {
+                    expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
+                  }
+            } else {
+                if (confirm('You Lose! Play again?')) {
+                    resetGame();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
       }
   });
 }

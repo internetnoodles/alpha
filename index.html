@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=350, initial-scale=1.0">
     <link rel="stylesheet" href="style.css" />
-    <title>Alpha</title>
+    <title>Welcome</title>
 </head>
 <body>
-    <script src="scripts/main.js"></script>
+    <div class="menu-wrapper">
+        <button id="start-game">Start Game</button>
+    </div>
+    <script>
+        document.getElementById('start-game').addEventListener('click', () => {
+            window.location.href = 'alpha.html';
+        });
+    </script>
 </body>
 </html>

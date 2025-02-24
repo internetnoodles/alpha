@@ -18,10 +18,23 @@ body {
   padding: 10px;           /* Add spacing around the grid */
 }
 
+.menu-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
 button {
   min-width: 60px;
   min-height: 60px;
   font-weight: bold;
   font-family: sans-serif;
   font-size: 100%;
+}
+
+#start-game {
+  padding: 20px 40px;
+  font-size: 24px;
+  cursor: pointer;
 }
