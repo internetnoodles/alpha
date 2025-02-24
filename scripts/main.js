@@ -10,6 +10,27 @@ function shuffle(array) {
   }
 }
 
+function shuffleBoard(gridContainer) {
+    // Get all buttons
+    const buttons = Array.from(gridContainer.querySelectorAll('.grid-item'));
+    if (buttons.length === 0) {
+        console.error('No grid-item buttons found in gridContainer');
+        return;
+    }
+    // Store current styles and text
+    const buttonStates = buttons.map(button => ({
+        text: button.textContent,
+        backgroundColor: button.style.backgroundColor,
+        color: button.style.color
+    }));
+    shuffle(buttonStates);
+    buttons.forEach((button, index) => {  // Apply shuffled states back to buttons
+        button.textContent = buttonStates[index].text;
+        button.style.backgroundColor = buttonStates[index].backgroundColor;
+        button.style.color = buttonStates[index].color;
+    });
+}
+
 function createLetterGrid(gridSize) {
   const totalCells = gridSize * gridSize;
   if (totalCells < 26) {
@@ -70,19 +91,19 @@ function createLetterGrid(gridSize) {
   gridContainer.addEventListener('click', (event) => {
       if (event.target.tagName === 'BUTTON') {
           const userChoice = event.target.textContent;
-          if (userChoice == expectedLetter) {
+          if (userChoice === expectedLetter) {
+              if (!isHardMode) { // Only change colors in normal or easy mode
+                event.target.style.backgroundColor = 'green';
+                event.target.style.color = 'white';
+              }
               if (isEasyMode) {
                 gridContainer.querySelectorAll('.grid-item').forEach(button => {
                 if (button.textContent === userChoice) {
                     button.style.backgroundColor = 'green';
                     button.style.color = 'white'; 
                 }
-              });
-            }
-              if (!isHardMode) { // Only change colors in normal or easy mode
-              event.target.style.backgroundColor = 'green';
-              event.target.style.color = 'white';
-              }
+                });
+              }  
               if (expectedLetter === 'Z') {
                 localStorage.setItem('hasWon', 'true'); // Mark as won
                   const winPopup = confirm('You Win! Play again?');
@@ -93,6 +114,9 @@ function createLetterGrid(gridSize) {
                     }
                   } else {
                     expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
+                    if (isHardMode) {
+                        shuffleBoard(gridContainer); // Shuffle board in hard mode
+                    }
                   }
             } else {
                 localStorage.setItem('hasLost', 'true'); // Mark as lost
