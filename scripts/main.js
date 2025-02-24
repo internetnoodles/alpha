@@ -40,8 +40,6 @@ function createLetterGrid(gridSize) {
       }
   }
 
-  //document.body.appendChild(gridContainer);     **************************
-
   const gridWrapper = document.createElement("div");
     gridWrapper.classList.add("grid-wrapper");
     // Append the gridContainer to the wrapper
@@ -65,20 +63,28 @@ function createLetterGrid(gridSize) {
   }
 
   // Gameplay
-  let expectedLetter = 'A'; // Start with 'A'
+  const isHardMode = localStorage.getItem('hardMode') === 'true'; // check if hard mode
+  const isEasyMode = localStorage.getItem('easyMode') === 'true'; //check if easy mode
+  let expectedLetter = 'A'; // Start with 'A'  
+
   gridContainer.addEventListener('click', (event) => {
       if (event.target.tagName === 'BUTTON') {
           const userChoice = event.target.textContent;
           if (userChoice == expectedLetter) {
-              /*gridContainer.querySelectorAll('.grid-item').forEach(button => {
+              if (isEasyMode) {
+                gridContainer.querySelectorAll('.grid-item').forEach(button => {
                 if (button.textContent === userChoice) {
                     button.style.backgroundColor = 'green';
                     button.style.color = 'white'; 
                 }
-              });        --FOR EASY MODE: HILIGHT ALL DUPLICATE CORRECT LETTERS--*/
+              });
+            }
+              if (!isHardMode) { // Only change colors in normal or easy mode
               event.target.style.backgroundColor = 'green';
               event.target.style.color = 'white';
+              }
               if (expectedLetter === 'Z') {
+                localStorage.setItem('hasWon', 'true'); // Mark as won
                   const winPopup = confirm('You Win! Play again?');
                   if (winPopup) {
                     resetGame();
@@ -89,7 +95,9 @@ function createLetterGrid(gridSize) {
                     expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
                   }
             } else {
-                if (confirm('You Lose! Play again?')) {
+                localStorage.setItem('hasLost', 'true'); // Mark as lost
+                const losePopup = confirm('You Lose! Play again?');
+                if (losePopup) {
                     resetGame();
                 } else {
                     window.location.href = 'index.html';
