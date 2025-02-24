@@ -53,8 +53,16 @@ function createLetterGrid(gridSize) {
   gridContainer.addEventListener('click', (event) => {
       if (event.target.tagName === 'BUTTON') {
           const userChoice = event.target.textContent;
+
           if (userChoice == expectedLetter) {
-              console.log('Success');
+              /*gridContainer.querySelectorAll('.grid-item').forEach(button => {
+                if (button.textContent === userChoice) {
+                    button.style.backgroundColor = 'green';
+                    button.style.color = 'white'; 
+                }
+              });        --FOR EASY MODE: HILIGHT ALL DUPLICATE CORRECT LETTERS--*/
+              event.target.style.backgroundColor = 'green';
+              event.target.style.color = 'white';
               if (expectedLetter === 'Z') {
                   console.log('You Win!');
                   expectedLetter = 'A'; // Reset to start over
@@ -62,9 +70,23 @@ function createLetterGrid(gridSize) {
                   expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
               }
           } else {
-              console.log('Wrong');
               alert('You lost! Start over from A.');
               expectedLetter = 'A'; // Reset to 'A' on wrong click
+
+              // Reshuffle the board
+              letters = [...alphabet];
+              for (let i = 26; i < totalCells; i++) {
+                letters.push(generateRandomLetter()); // add random extras
+              }
+              shuffle(letters);
+
+              // Reset all buttons to original color
+              const buttons = gridContainer.querySelectorAll('.grid-item');
+              buttons.forEach((button, idx) => {
+                button.textContent = letters[idx];
+                button.style.backgroundColor = ''; // Reset color to default
+                button.style.color = '';
+              });
           }
       }
   });
