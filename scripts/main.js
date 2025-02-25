@@ -51,12 +51,14 @@ function createLetterGrid(gridSize) {
   gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, 0fr)`; 
 
   let index = 0;
+  const buttons = [];
   for (let i = 0; i < gridSize; i++) {
       for (let j = 0; j < gridSize; j++) {
           const letterButton = document.createElement("button");
           letterButton.classList.add("grid-item");
           letterButton.textContent = letters[index];
           gridContainer.appendChild(letterButton);
+          buttons.push(letterButton); // Store buttons for later use
           index++;
       }
   }
@@ -84,50 +86,45 @@ function createLetterGrid(gridSize) {
   }
 
   // Gameplay
-  const isHardMode = localStorage.getItem('hardMode') === 'true'; // check if hard mode
-  const isEasyMode = localStorage.getItem('easyMode') === 'true'; //check if easy mode
-  let expectedLetter = 'A'; // Start with 'A'  
+  const gameMode = localStorage.getItem('gameMode') || 'normal';
+  let expectedLetter = 'A'; // Start with 'A'
 
   gridContainer.addEventListener('click', (event) => {
-      if (event.target.tagName === 'BUTTON') {
-          const userChoice = event.target.textContent;
-          if (userChoice === expectedLetter) {
-              if (!isHardMode) { // Only change colors in normal or easy mode
+    if (event.target.tagName === 'BUTTON') {
+        const userChoice = event.target.textContent;
+        if (userChoice === expectedLetter) {
+            if (gameMode !== 'hard') { // Normal or Easy: highlight clicked letter
                 event.target.style.backgroundColor = 'green';
                 event.target.style.color = 'white';
-              }
-              if (isEasyMode) {
-                gridContainer.querySelectorAll('.grid-item').forEach(button => {
-                if (button.textContent === userChoice) {
-                    button.style.backgroundColor = 'green';
-                    button.style.color = 'white'; 
-                }
+            }
+            if (gameMode === 'easy') { // Highlight duplicates of the clicked letter in Easy Mode
+                buttons.forEach(button => {
+                    if (button.textContent === userChoice) {
+                        button.style.backgroundColor = 'green';
+                        button.style.color = 'white';
+                    }
                 });
-              }  
-              if (expectedLetter === 'Z') {
-                localStorage.setItem('hasWon', 'true'); // Mark as won
-                  const winPopup = confirm('You Win! Play again?');
-                  if (winPopup) {
-                    resetGame();
-                    } else {
-                    window.location.href = 'index.html';
-                    }
-                  } else {
-                    expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
-                    if (isHardMode) {
-                        shuffleBoard(gridContainer); // Shuffle board in hard mode
-                    }
-                  }
-            } else {
-                localStorage.setItem('hasLost', 'true'); // Mark as lost
-                const losePopup = confirm('You Lose! Play again?');
-                if (losePopup) {
+            }
+            if (expectedLetter === 'Z') {
+                localStorage.setItem('hasWon', 'true');
+                if (confirm('You Win! Play again?')) {
                     resetGame();
                 } else {
                     window.location.href = 'index.html';
                 }
+            } else {
+                expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
+                if (gameMode === 'hard') shuffleBoard(gridContainer);
             }
-      }
+        } else {
+            localStorage.setItem('hasLost', 'true');
+            if (confirm('You Lose! Play again?')) {
+                resetGame();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    }
   });
 }
 

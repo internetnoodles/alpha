@@ -31,23 +31,14 @@
             document.getElementById('easy-mode').style.display = 'block';
         }
 
-        document.getElementById('start-game').addEventListener('click', () => {
-            localStorage.setItem('hardMode', 'false');
-            localStorage.setItem('easyMode', 'false');
+        function startGame(mode) {
+            localStorage.setItem('gameMode', mode);
             window.location.href = 'alpha.html';
-        });
+        }
 
-        document.getElementById('hard-mode').addEventListener('click', () => {
-            localStorage.setItem('hardMode', 'true');
-            localStorage.setItem('easyMode', 'false');
-            window.location.href = 'alpha.html';
-        });
-
-        document.getElementById('easy-mode').addEventListener('click', () => {
-            localStorage.setItem('easyMode', 'true');
-            localStorage.setItem('hardMode', 'false');
-            window.location.href = 'alpha.html';
-        });
+        document.getElementById('start-game').addEventListener('click', () => startGame('normal'));
+        document.getElementById('hard-mode').addEventListener('click', () => startGame('hard'));
+        document.getElementById('easy-mode').addEventListener('click', () => startGame('easy'));
     </script>
 </body>
 </html>

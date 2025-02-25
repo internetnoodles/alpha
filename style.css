@@ -12,10 +12,10 @@ body {
 
 .grid-wrapper {
   display: flex;           
-  justify-content: center; /* Center horizontally */
-  align-items: center;     /* Center vertically */
-  height: 100vh;           /* Full viewport height */
-  padding: 10px;           /* Add spacing around the grid */
+  justify-content: center; 
+  align-items: center;     
+  height: 100vh;           
+  padding: 10px;
 }
 
 .menu-wrapper {
@@ -33,11 +33,20 @@ button {
   font-weight: bold;
   font-family: sans-serif;
   font-size: 100%;
+  border: 1px solid #000;
+  border-radius: 5px;
 }
 
 #start-game {
   padding: 20px 40px;
   font-size: 24px;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+#hard-mode, #easy-mode {
+  padding: 10px 20px; 
+  font-size: 16px;
   cursor: pointer;
 }
 
