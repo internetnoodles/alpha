@@ -100,14 +100,55 @@ function createLetterGrid(gridSize) {
       }
   }
 
-  const gridWrapper = document.createElement("div");
+    const gridWrapper = document.createElement("div");
     gridWrapper.classList.add("grid-wrapper");
     // Append the gridContainer to the wrapper
     gridWrapper.appendChild(gridContainer);
     // Append the wrapper to the body
     document.body.appendChild(gridWrapper);
 
-  let sizeMultiplier = 1; // Start with original size (100%)
+    let sizeMultiplier = 1; // Start with original size (100%)
+    let startTime = Date.now();
+    let timerInterval = null;
+    let elapsedTime = 0;
+    let isTimerRunning = false;
+
+    function startTimer() {
+        if (!isTimerRunning) {
+            startTime = Date.now() - elapsedTime * 1000; // Adjust for elapsed time if paused
+            timerInterval = setInterval(updateTimer, 1000);
+            isTimerRunning = true;
+        }
+    }
+
+    function stopTimer() {
+        if (isTimerRunning) {
+            clearInterval(timerInterval);
+            elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            isTimerRunning = false;
+        }
+    }
+
+    function updateTimer() {
+        elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsedTime / 60);
+        const seconds = elapsedTime % 60;
+        const timerDisplay = document.getElementById('timer');
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function getFormattedTime() {
+        const minutes = Math.floor(elapsedTime / 60);
+        const seconds = elapsedTime % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function resetTimer() {
+        stopTimer();
+        elapsedTime = 0;
+        const timerDisplay = document.getElementById('timer');
+        timerDisplay.textContent = '00:00';
+    }
 
   function resetGame() {
     expectedLetter = 'A'; // Reset to 'A'
@@ -117,13 +158,14 @@ function createLetterGrid(gridSize) {
         letters.push(generateRandomLetter()); // Add random extras
     }
     shuffle(letters); 
-    const buttons = gridContainer.querySelectorAll('.grid-item');
     buttons.forEach((button, idx) => {
         button.textContent = letters[idx]; // Update text
         button.style.backgroundColor = ''; // Clear color
         button.style.color = ''; // Clear color
         updateButtonSizes(); // Reset sizes
     });
+    resetTimer();
+    startTimer();
   }
 
   function updateButtonSizes() {
@@ -150,11 +192,12 @@ function createLetterGrid(gridSize) {
   const gameMode = localStorage.getItem('gameMode') || 'normal';
   let expectedLetter = 'A'; // Start with 'A'
 
+  // Start the timer when the game begins
+  startTimer();
+
   gridContainer.addEventListener('click', async (event) => {
     if (event.target.tagName === 'BUTTON') {
         const userChoice = event.target.textContent;
-
-         // Add animation to the clicked button
          event.target.classList.add('bounce'); 
          //event.target.classList.add('rumble');
 
@@ -175,8 +218,10 @@ function createLetterGrid(gridSize) {
                 increaseButtonSizes(); // Increase size of all buttons in Easy Mode
             }
             if (expectedLetter === 'Z') {
+                stopTimer();
                 localStorage.setItem('hasWon', 'true');
-                const playAgain = await showModal('You Win! Play again?');
+                const finalTime = getFormattedTime();
+                const playAgain = await showModal(`You Win! Time: ${finalTime}`);
                 if (playAgain) {
                     resetGame();
                 } else {
@@ -190,8 +235,10 @@ function createLetterGrid(gridSize) {
                 }
             }
         } else {
+            stopTimer();
             localStorage.setItem('hasLost', 'true');
-            const playAgain = await showModal('You Lose! Play again?');
+            const finalTime = getFormattedTime();
+            const playAgain = await showModal(`You Lose! Time: ${finalTime}`);
                 if (playAgain) {
                     resetGame();
             } else {

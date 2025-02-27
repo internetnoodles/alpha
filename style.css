@@ -141,3 +141,16 @@ button {
 .grid-item {
   transition: font-size 0.3s ease, min-width 0.3s ease, min-height 0.3s ease;
 }
+
+/* Timer Styles */
+.timer {
+  position: absolute;
+  top: 20px; /* Position at the top of the screen */
+  font-size: 24px;
+  font-family: sans-serif;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  padding: 5px 10px;
+  border-radius: 5px;
+  z-index: 1; /* Behind the buttons */
+}
