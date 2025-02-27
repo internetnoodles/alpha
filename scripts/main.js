@@ -31,6 +31,40 @@ function shuffleBoard(gridContainer) {
     });
 }
 
+// Custom modal function that returns a Promise
+function showModal(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('game-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const yesButton = document.getElementById('modal-yes');
+        const cancelButton = document.getElementById('modal-cancel');
+
+        // Set the message
+        modalMessage.textContent = message;
+
+        // Show the modal
+        modal.style.display = 'flex';
+
+        // Event listeners for buttons
+        const onYes = () => {
+            modal.style.display = 'none';
+            yesButton.removeEventListener('click', onYes);
+            cancelButton.removeEventListener('click', onCancel);
+            resolve(true); // Resolve with true (play again)
+        };
+
+        const onCancel = () => {
+            modal.style.display = 'none';
+            yesButton.removeEventListener('click', onYes);
+            cancelButton.removeEventListener('click', onCancel);
+            resolve(false); // Resolve with false (return to menu)
+        };
+
+        yesButton.addEventListener('click', onYes);
+        cancelButton.addEventListener('click', onCancel);
+    });
+}
+
 function createLetterGrid(gridSize) {
   const totalCells = gridSize * gridSize;
   if (totalCells < 26) {
@@ -89,7 +123,7 @@ function createLetterGrid(gridSize) {
   const gameMode = localStorage.getItem('gameMode') || 'normal';
   let expectedLetter = 'A'; // Start with 'A'
 
-  gridContainer.addEventListener('click', (event) => {
+  gridContainer.addEventListener('click', async (event) => {
     if (event.target.tagName === 'BUTTON') {
         const userChoice = event.target.textContent;
         if (userChoice === expectedLetter) {
@@ -107,7 +141,8 @@ function createLetterGrid(gridSize) {
             }
             if (expectedLetter === 'Z') {
                 localStorage.setItem('hasWon', 'true');
-                if (confirm('You Win! Play again?')) {
+                const playAgain = await showModal('You Win! Play again?');
+                if (playAgain) {
                     resetGame();
                 } else {
                     window.location.href = 'index.html';
@@ -118,8 +153,9 @@ function createLetterGrid(gridSize) {
             }
         } else {
             localStorage.setItem('hasLost', 'true');
-            if (confirm('You Lose! Play again?')) {
-                resetGame();
+            const playAgain = await showModal('You Lose! Play again?');
+                if (playAgain) {
+                    resetGame();
             } else {
                 window.location.href = 'index.html';
             }
