@@ -86,6 +86,9 @@ function createLetterGrid(gridSize) {
 
   let index = 0;
   const buttons = [];
+  // Define base sizes (matching CSS)
+  const BASE_FONT_SIZE = 100; // 100% (in percentage)
+  const BASE_DIMENSION = 60; // 60px (in pixels)
   for (let i = 0; i < gridSize; i++) {
       for (let j = 0; j < gridSize; j++) {
           const letterButton = document.createElement("button");
@@ -104,8 +107,11 @@ function createLetterGrid(gridSize) {
     // Append the wrapper to the body
     document.body.appendChild(gridWrapper);
 
+  let sizeMultiplier = 1; // Start with original size (100%)
+
   function resetGame() {
     expectedLetter = 'A'; // Reset to 'A'
+    sizeMultiplier = 1; // Reset size multiplier
     letters = [...alphabet]; // Reset to all 26 letters
     for (let i = 26; i < totalCells; i++) {
         letters.push(generateRandomLetter()); // Add random extras
@@ -116,7 +122,28 @@ function createLetterGrid(gridSize) {
         button.textContent = letters[idx]; // Update text
         button.style.backgroundColor = ''; // Clear color
         button.style.color = ''; // Clear color
+        updateButtonSizes(); // Reset sizes
     });
+  }
+
+  function updateButtonSizes() {
+    // Clamp sizeMultiplier to prevent buttons from becoming too small
+    sizeMultiplier = Math.max(sizeMultiplier, 0.5); // Minimum 50% of original size
+    buttons.forEach(button => {
+        button.style.fontSize = `${BASE_FONT_SIZE * sizeMultiplier}%`;
+        button.style.minWidth = `${BASE_DIMENSION * sizeMultiplier}px`;
+        button.style.minHeight = `${BASE_DIMENSION * sizeMultiplier}px`;
+    });
+  }
+
+  function increaseButtonSizes() {
+    sizeMultiplier += 0.05; // Increase by 5%
+    updateButtonSizes();
+  }
+
+  function decreaseButtonSizes() {
+    sizeMultiplier -= 0.02; // Decrease by 2%
+    updateButtonSizes();
   }
 
   // Gameplay
@@ -126,6 +153,11 @@ function createLetterGrid(gridSize) {
   gridContainer.addEventListener('click', async (event) => {
     if (event.target.tagName === 'BUTTON') {
         const userChoice = event.target.textContent;
+
+         // Add animation to the clicked button
+         event.target.classList.add('bounce'); 
+         //event.target.classList.add('rumble');
+
         if (userChoice === expectedLetter) {
             if (gameMode !== 'hard') { // Normal or Easy: highlight clicked letter
                 event.target.style.backgroundColor = 'green';
@@ -136,8 +168,11 @@ function createLetterGrid(gridSize) {
                     if (button.textContent === userChoice) {
                         button.style.backgroundColor = 'green';
                         button.style.color = 'white';
+                        button.classList.add('bounce'); // Apply animation to duplicates in Easy Mode
+                            // button.classList.add('rumble'); 
                     }
                 });
+                increaseButtonSizes(); // Increase size of all buttons in Easy Mode
             }
             if (expectedLetter === 'Z') {
                 localStorage.setItem('hasWon', 'true');
@@ -149,7 +184,10 @@ function createLetterGrid(gridSize) {
                 }
             } else {
                 expectedLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
-                if (gameMode === 'hard') shuffleBoard(gridContainer);
+                if (gameMode === 'hard') {
+                    shuffleBoard(gridContainer);
+                    decreaseButtonSizes();
+                }
             }
         } else {
             localStorage.setItem('hasLost', 'true');
