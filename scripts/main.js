@@ -199,7 +199,6 @@ function createLetterGrid(gridSize) {
     if (event.target.tagName === 'BUTTON') {
         const userChoice = event.target.textContent;
          event.target.classList.add('bounce'); 
-         //event.target.classList.add('rumble');
 
         if (userChoice === expectedLetter) {
             if (gameMode !== 'hard') { // Normal or Easy: highlight clicked letter
@@ -212,10 +211,18 @@ function createLetterGrid(gridSize) {
                         button.style.backgroundColor = 'green';
                         button.style.color = 'white';
                         button.classList.add('bounce'); // Apply animation to duplicates in Easy Mode
-                            // button.classList.add('rumble'); 
                     }
                 });
                 increaseButtonSizes(); // Increase size of all buttons in Easy Mode
+
+                const nextLetter = String.fromCharCode(expectedLetter.charCodeAt(0) + 1);
+                if (nextLetter <= 'Z') {
+                    buttons.forEach(button => {
+                        if (button.textContent === nextLetter) {
+                            button.classList.add('rumble');
+                        }
+                    });
+                }
             }
             if (expectedLetter === 'Z') {
                 stopTimer();
@@ -232,7 +239,23 @@ function createLetterGrid(gridSize) {
                 if (gameMode === 'hard') {
                     shuffleBoard(gridContainer);
                     decreaseButtonSizes();
-                }
+                
+                    const randomLetters = new Set();
+                    const nextLetter = String.fromCharCode(expectedLetter.charCodeAt(0));
+                    while (randomLetters.size < 3) { // Generate 3 unique random letters
+                        const randomCharCode = Math.floor(Math.random() * 26) + 65;
+                        const randomLetter = String.fromCharCode(randomCharCode);
+                        if (randomLetter !== nextLetter) {
+                            randomLetters.add(randomLetter);
+                        }
+                    }
+                
+                    buttons.forEach(button => {
+                        if (randomLetters.has(button.textContent)) {
+                            button.classList.add('distract');
+                        }
+                    });
+                }       
             }
         } else {
             stopTimer();

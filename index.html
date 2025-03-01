@@ -11,28 +11,45 @@
         <button id="start-game">Start Game</button>
         <button id="hard-mode" style="display: none;">Hard Mode</button>
         <button id="easy-mode" style="display: none;">Easy Mode</button>
+        <label class="unlock-label">
+            <input type="checkbox" id="unlock-modes" />
+            Unlock Hard & Easy Modes
+        </label>
     </div>
     <script>
-        // Reset hasWon & hasLost on page load/refresh
+        // Reset checkbox on page load/refresh
         window.addEventListener('load', () => {
-            localStorage.setItem('hasWon', 'false');
-            localStorage.setItem('hasLost', 'false');
+            const unlockCheckbox = document.getElementById('unlock-modes');
+            unlockCheckbox.checked = false; // Reset checkbox on load
+            updateModeButtons();
         });
 
-        // Check if player has won before
-        const hasWon = localStorage.getItem('hasWon') === 'true';
-        if (hasWon) {
-            document.getElementById('hard-mode').style.display = 'block';
+        // cache button references
+        const hardModeButton = document.getElementById('hard-mode');
+        const easyModeButton = document.getElementById('easy-mode');
+
+        // Function to update button visibility based on hasWon, hasLost, and checkbox state
+        function updateModeButtons() {
+            const unlockCheckbox = document.getElementById('unlock-modes');
+            const hasWon = localStorage.getItem('hasWon') === 'true';
+            const hasLost = localStorage.getItem('hasLost') === 'true';
+            console.log('Checkbox:', unlockCheckbox.checked, 'hasWon:', hasWon, 'hasLost:', hasLost);
+            // Separate conditions for each button
+            hardModeButton.style.display = (unlockCheckbox.checked || hasWon) ? 'block' : 'none';
+            easyModeButton.style.display = (unlockCheckbox.checked || hasLost) ? 'block' : 'none';
         }
 
-        // Check if player has lost before
-        const hasLost = localStorage.getItem('hasLost') === 'true';
-        if (hasLost) {
-            document.getElementById('easy-mode').style.display = 'block';
-        }
+        // Initial check for button visibility
+        updateModeButtons();
+
+        // Add event listener for checkbox changes
+        document.getElementById('unlock-modes').addEventListener('change', updateModeButtons);
 
         function startGame(mode) {
             localStorage.setItem('gameMode', mode);
+            localStorage.setItem('hasWon', 'false'); // Reset on game start
+            localStorage.setItem('hasLost', 'false'); // Reset on game start
+            document.getElementById('unlock-modes').checked = false; // Uncheck on game start
             window.location.href = 'alpha.html';
         }
 
